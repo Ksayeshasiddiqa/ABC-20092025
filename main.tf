@@ -2,7 +2,7 @@ provider "azurerm" {
 features{}
 }
 resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
+  name     = "ksalinux"
   location = "West Europe"
 }
 
@@ -14,4 +14,3 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled       = false
 
 }
-
