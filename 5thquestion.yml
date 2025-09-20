@@ -1,0 +1,39 @@
+trigger:
+- main
+
+pool:
+  name: 'agent_ayesha'                             # your agent pool
+  demands:
+    - agent.name -equals agent_ayesha_linux  
+
+variables:
+  dockerRegistryServiceConnection: 'azurecontainerregistrydocker'  # Service connection name
+  imageName: 'containerregistryksa.azurecr.io/ksayeshasiddiqaazuredeveopspipelinewithgithubnew:latest' # Full ACR image path
+
+stages:
+- stage: RunAndVerify
+  jobs:
+  - job: RunImage
+    steps:
+    - task: Docker@2
+      displayName: 'Login to Azure Container Registry'
+      inputs:
+        command: login
+        containerRegistry: '$(dockerRegistryServiceConnection)'
+
+    - script: |
+        echo "Pulling image: $(imageName)"
+        docker pull $(imageName)
+
+        echo "Running image..."
+        docker run -d --name testcontainer $(imageName)
+
+        echo "Check container status"
+        docker ps
+
+        echo "Verify container by running a command inside"
+        docker exec testcontainer echo "Container is running successfully!"
+
+        echo "Cleaning up..."
+        docker rm -f testcontainer
+      displayName: 'Run and Verify Container'
